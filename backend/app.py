@@ -81,7 +81,7 @@ def update_todo(serial_no):
         })
         return redirect('/')
     
-    return render_template('update.html', element=element)
+    return jsonify(element)
 
 @app.route('/search', methods=['GET', 'POST'])
 def search_todo():  
@@ -98,7 +98,7 @@ def landing_page():
 
     all_todo = list(db.todos.find({}))
     print(all_todo)
-    return render_template('index.html', allTodo=all_todo)
+    return jsonify(all_todo)
 
 @app.route('/about')
 def about_page():

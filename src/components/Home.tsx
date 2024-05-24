@@ -1,16 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
+import { DataContext } from "../context/dataContext";
 const Home: React.FC = () => {
-  // const navigate = useNavigate();
-  // const [serial_no , setSerial_no] = useState<number>(0)
+  const data = useContext(DataContext);
   const [task, setTask] = useState<any[]>([]);
-  const allTodo = async () => {
-    const response = await fetch("http://127.0.0.1:8000/");
-    const res = await response.json();
-    console.log(res);
-    setTask(res);
-  };
+  
   const deleteTask = async (id: number) => {
     const serial = id;
     console.log(serial);
@@ -21,13 +15,16 @@ const Home: React.FC = () => {
       },
     });
     alert("Task Deleted Successfully");
-    window.location.reload()
+    window.location.reload();
     await res.json();
   };
+  
+  
   useEffect(() => {
-    allTodo();
-    // console.log(task[0].serial_no);
-  }, []);
+    setTask(data);
+    console.log(task);
+    
+  }, [data]);
   return (
     <>
       <div className="relative overflow-x-auto mx-auto max-w-screen-xl shadow-md sm:rounded-lg mt-10 pt-5">

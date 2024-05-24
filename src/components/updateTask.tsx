@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -12,6 +13,7 @@ const updateTask: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation()
   const num = location.pathname.split('/')[2]
+  const [initalData, setInitalData] = useState<any[]>([]);
   const [task_data, setTask_data] = useState<Task>({
     task_name: "",
     email: "",
@@ -20,12 +22,11 @@ const updateTask: React.FC = () => {
     serial_no: 0,
   });
   const allTodo = async () => {
-    const response = await fetch("http://127.0.0.1:8000/");
+    const response = await fetch("http://localhost:8000/");
     const res = await response.json();
-    console.log(res);
-    console.log(Number(num));
+    console.log(Number(num));    
+    setInitalData(res);
     
-    setTask_data(res);
   };
   
   const handelFormUpdate = async (e: React.FormEvent<HTMLFormElement>,id:number) => {
@@ -44,6 +45,7 @@ const updateTask: React.FC = () => {
   };
   useEffect(()=>{
     allTodo()
+    console.log(initalData[Number(num)]);
 },[])
 
 
@@ -66,7 +68,7 @@ const updateTask: React.FC = () => {
                 type="text"
                 name="task_name"
                 id="task_name"
-                value={task_data.task_name}
+                value={initalData[Number(num)].task_name}
                 onChange={(e) => {
                   setTask_data({ ...task_data, task_name: e.target.value });
                 }}
@@ -87,7 +89,7 @@ const updateTask: React.FC = () => {
                 <input
                   type="text"
                   name="email"
-                  value={task_data.email}
+                  value={initalData[Number(num)].email}
                   id="email"
                   onChange={(e) => {
                     setTask_data({ ...task_data, email: e.target.value });
@@ -108,7 +110,7 @@ const updateTask: React.FC = () => {
                   <input
                     type="time"
                     name="end_time"
-                    value={task_data.end_time}
+                    value={initalData[Number(num)].end_time}
                     id="end_time"
                     onChange={(e) => {
                       setTask_data({ ...task_data, end_time: e.target.value });
@@ -130,7 +132,7 @@ const updateTask: React.FC = () => {
               <textarea
                 id="desc"
                 name="desc"
-                value={task_data.desc}
+                value={initalData[Number(num)].desc}
                 onChange={(e) => {
                   setTask_data({ ...task_data, desc: e.target.value });
                 }}

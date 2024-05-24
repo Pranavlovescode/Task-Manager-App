@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 const Home: React.FC = () => {
+  
   const [task, setTask] = useState<any[]>([]);
   const allTodo = async () => {
     const response = await fetch("http://127.0.0.1:8000/");
@@ -96,7 +97,7 @@ const Home: React.FC = () => {
                   {tasks.title}
                 </th>
                 <td className="px-6 py-4">{tasks.desc}</td>
-                <td className="px-6 py-4">{tasks.date_created.$date}</td>
+                <td className="px-6 py-4">{tasks.date_created}</td>
                 <td className="px-6 py-4">{tasks.end_time}</td>
                 <td className="px-6 py-4">
                   <div className="flex flex-row">

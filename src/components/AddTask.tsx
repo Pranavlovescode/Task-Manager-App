@@ -17,9 +17,6 @@ const AddTask: React.FC = () => {
   });
   const handelFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setTask_data(task_data);
-    console.log(task_data);
-
     const response = await fetch("http://localhost:8000/submit", {
       method: "POST",
       headers: {
@@ -28,8 +25,8 @@ const AddTask: React.FC = () => {
       body: JSON.stringify(task_data),
     });
     const res = await response.json();
-    console.log(res);
     alert("Task Added Successfully");
+    console.log(res);
     navigate("/");
   };
   useEffect(() => {

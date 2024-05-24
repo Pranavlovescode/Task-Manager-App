@@ -12,7 +12,7 @@ from bson import ObjectId
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})
+CORS(app)
 
 # Load MongoDB URI from environment variables
 mongo_uri = os.getenv("MONGO_URI")
@@ -72,7 +72,7 @@ def create_data():
 def delete_todo(serial_no):
     db.todos.delete_one({"serial_no": serial_no})
     print('Deleting the data')
-    return redirect('/')
+    return None
 
 @app.route('/update/<int:serial_no>', methods=['GET', 'POST'])
 def update_todo(serial_no):
@@ -91,7 +91,7 @@ def update_todo(serial_no):
         })
         return redirect('/')
 
-    return jsonify(json.loads(json_util.dumps(element)))
+    return jsonify(element)
 
 @app.route('/search', methods=['GET', 'POST'])
 def search_todo():
@@ -99,14 +99,14 @@ def search_todo():
     print(f"Search query: {search}")
     results = list(db.todos.find({"title": {"$regex": f"^{search}", "$options": "i"}}))
     print(f"Number of results: {len(results)}")
-    serialized_results = json.loads(json_util.dumps(results))
+    serialized_results = json_util.dumps(results)
     return jsonify(serialized_results)
 
 @app.route('/')
 def landing_page():
-    all_todo = list(db.todos.find({}))
+    all_todo = list(db.todos.find({},{ "_id": 0 }))
     print(all_todo)
-    return jsonify(json.loads(json_util.dumps(all_todo)))
+    return jsonify(all_todo)
 
 @app.route('/about')
 def about_page():

@@ -4,11 +4,13 @@ from datetime import datetime
 from bson import json_util
 import os
 from dotenv import load_dotenv
+from flask_cors import CORS
 
 # Load environment variables from .env file
 load_dotenv()
 
 app = Flask(__name__)
+CORS(app)
 
 # Load MongoDB URI from environment variables
 mongo_uri = os.getenv("MONGO_URI")
@@ -84,7 +86,7 @@ def update_todo(serial_no):
     return jsonify(element)
 
 @app.route('/search', methods=['GET', 'POST'])
-def search_todo():  
+def search_todo(): 
     
     search = request.form.get('search', '').lower()
     print(f"Search query: {search}")
@@ -102,7 +104,7 @@ def landing_page():
 
 @app.route('/about')
 def about_page():
-    return render_template('about.html')
+    return redirect('/')
 
 if __name__ == '__main__':
     app.run(debug=True, port=8000)

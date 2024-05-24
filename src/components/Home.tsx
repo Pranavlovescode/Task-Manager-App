@@ -1,6 +1,16 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const Home: React.FC = () => {
+    const [task , setTask]= useState([])
+    const allTodo = async()=>{
+        const response = await fetch('http://127.0.0.1:8000/')
+        const res = await response.json()
+        console.log(res)
+        setTask(res)
+    }
+    useEffect(()=>{
+        allTodo()
+    },[])
   return (
     <>
       <div className="relative overflow-x-auto mx-auto max-w-screen-xl shadow-md sm:rounded-lg mt-10 pt-5">
@@ -73,12 +83,15 @@ const Home: React.FC = () => {
               <td className="px-6 py-4">Laptop</td>
               <td className="px-6 py-4">$2999</td>
               <td className="px-6 py-4">
+                <div className="flex flex-row">
                 <a
                   href="#"
-                  className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                  className="font-medium text-blue-600 dark:text-blue-500 hover:underline mr-3"
                 >
                   Edit
                 </a>
+                <button className="font-medium text-red-600 dark:text-blue-500 hover:underline">Remove</button>
+                </div>
               </td>
             </tr>
           </tbody>

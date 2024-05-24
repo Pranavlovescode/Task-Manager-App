@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 const Home: React.FC = () => {
-  
+  // const navigate = useNavigate();
+  // const [serial_no , setSerial_no] = useState<number>(0)
   const [task, setTask] = useState<any[]>([]);
   const allTodo = async () => {
     const response = await fetch("http://127.0.0.1:8000/");
@@ -10,8 +11,22 @@ const Home: React.FC = () => {
     console.log(res);
     setTask(res);
   };
+  const deleteTask = async (id: number) => {
+    const serial = id;
+    console.log(serial);
+    const res = await fetch(`http://127.0.0.1:8000/delete/${serial}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    alert("Task Deleted Successfully");
+    window.location.reload()
+    await res.json();
+  };
   useEffect(() => {
     allTodo();
+    // console.log(task[0].serial_no);
   }, []);
   return (
     <>
@@ -89,7 +104,9 @@ const Home: React.FC = () => {
           <tbody>
             {task.map((tasks, id) => (
               <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                <td className="px-6 py-4" key={id}>{id + 1}</td>
+                <td className="px-6 py-4" key={id}>
+                  {id + 1}
+                </td>
                 <th
                   scope="row"
                   className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
@@ -101,13 +118,16 @@ const Home: React.FC = () => {
                 <td className="px-6 py-4">{tasks.end_time}</td>
                 <td className="px-6 py-4">
                   <div className="flex flex-row">
-                    <a
-                      href="#"
+                    <Link
+                      to={`/update-task/${tasks.serial_no}`}
                       className="font-medium text-blue-600 dark:text-blue-500 hover:underline mr-3"
                     >
                       Edit
-                    </a>
-                    <button className="font-medium text-red-600 dark:text-blue-500 hover:underline">
+                    </Link>
+                    <button
+                      onClick={() => deleteTask(tasks.serial_no)}
+                      className="font-medium text-red-600 dark:text-blue-500 hover:underline"
+                    >
                       Remove
                     </button>
                   </div>

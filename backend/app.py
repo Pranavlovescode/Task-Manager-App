@@ -64,29 +64,31 @@ def create_data():
             'end_time': end_time,
             'email': email,
         })
-        return None
+        return {'message': 'Data added successfully'}
 
-    return None
+    return {'message': 'Data added successfully'}
 
-@app.route('/delete/<int:serial_no>')
+@app.route('/delete/<int:serial_no>',methods=['DELETE'])
 def delete_todo(serial_no):
     db.todos.delete_one({"serial_no": serial_no})
     print('Deleting the data')
-    return None
+    return {'message': 'Data deleted successfully'}
 
 @app.route('/update/<int:serial_no>', methods=['GET', 'POST'])
 def update_todo(serial_no):
     element = db.todos.find_one({"serial_no": serial_no})
     if request.method == 'POST':
-        updated_title = request.form['title']
-        updated_desc = request.form['desc']
+        updated_title = request.json.get('task_name')
+        updated_desc = request.json.get('desc')
+        updated_end_time = request.json.get('end_time')
         updated_date = datetime.today()
 
         db.todos.update_one({"serial_no": serial_no}, {
             "$set": {
                 "title": updated_title,
                 "desc": updated_desc,
-                "date_created": updated_date
+                "date_created": updated_date,
+                "end_time": updated_end_time
             }
         })
         return redirect('/')

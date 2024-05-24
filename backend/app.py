@@ -54,7 +54,7 @@ def create_data():
         })
         return redirect('/')
       
-    return render_template('submit.html')
+    # return render_template('submit.html')
 
 @app.route('/delete/<int:serial_no>')
 def delete_todo(serial_no):  

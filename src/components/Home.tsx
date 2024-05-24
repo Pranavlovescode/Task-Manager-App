@@ -1,24 +1,22 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 const Home: React.FC = () => {
-    const [task , setTask]= useState([])
-    const allTodo = async()=>{
-        const response = await fetch('http://127.0.0.1:8000/')
-        const res = await response.json()
-        console.log(res)
-        setTask(res)
-    }
-    useEffect(()=>{
-        allTodo()
-    },[])
+  const [task, setTask] = useState<any[]>([]);
+  const allTodo = async () => {
+    const response = await fetch("http://127.0.0.1:8000/");
+    const res = await response.json();
+    console.log(res);
+    setTask(res);
+  };
+  useEffect(() => {
+    allTodo();
+  }, []);
   return (
     <>
       <div className="relative overflow-x-auto mx-auto max-w-screen-xl shadow-md sm:rounded-lg mt-10 pt-5">
-        <div className="pb-4 bg-white dark:bg-gray-900 px-3">
-          <label htmlFor="table-search" className="sr-only px-3">
-            Search
-          </label>
-          <div className="relative mt-1">
+        <div className="pb-4 bg-white dark:bg-gray-900 px-3 flex flex-row justify-evenly">
+          <div className="relative mt-1 flex pr-5 ">
             <div className="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
               <svg
                 className="w-4 h-4 text-gray-500 dark:text-gray-400"
@@ -43,6 +41,25 @@ const Home: React.FC = () => {
               placeholder="Search for items"
             />
           </div>
+          <Link
+            to="/addtask"            
+            className="flex items-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 justify-center"
+          >
+            <svg
+              className="h-3.5 w-3.5 mr-2"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <path
+                clip-rule="evenodd"
+                fill-rule="evenodd"
+                d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+              />
+            </svg>
+            Add Task
+          </Link>
         </div>
         <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -56,7 +73,7 @@ const Home: React.FC = () => {
               <th scope="col" className="px-6 py-3">
                 Description
               </th>
-              
+
               <th scope="col" className="px-6 py-3">
                 Created Time
               </th>
@@ -69,31 +86,33 @@ const Home: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-              <td className="px-6 py-4">
-                1
-              </td>
-              <th
-                scope="row"
-                className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-              >
-                Apple MacBook Pro 17"
-              </th>
-              <td className="px-6 py-4">Silver</td>
-              <td className="px-6 py-4">Laptop</td>
-              <td className="px-6 py-4">$2999</td>
-              <td className="px-6 py-4">
-                <div className="flex flex-row">
-                <a
-                  href="#"
-                  className="font-medium text-blue-600 dark:text-blue-500 hover:underline mr-3"
+            {task.map((tasks, id) => (
+              <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                <td className="px-6 py-4">{id + 1}</td>
+                <th
+                  scope="row"
+                  className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                 >
-                  Edit
-                </a>
-                <button className="font-medium text-red-600 dark:text-blue-500 hover:underline">Remove</button>
-                </div>
-              </td>
-            </tr>
+                  {tasks.task_name}
+                </th>
+                <td className="px-6 py-4">{tasks.desc}</td>
+                <td className="px-6 py-4">{tasks.date_created}</td>
+                <td className="px-6 py-4">{tasks.end_date}</td>
+                <td className="px-6 py-4">
+                  <div className="flex flex-row">
+                    <a
+                      href="#"
+                      className="font-medium text-blue-600 dark:text-blue-500 hover:underline mr-3"
+                    >
+                      Edit
+                    </a>
+                    <button className="font-medium text-red-600 dark:text-blue-500 hover:underline">
+                      Remove
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

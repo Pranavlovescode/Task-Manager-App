@@ -24,7 +24,7 @@ if not mongo_uri:
 try:
     # Create a MongoClient instance
     client = MongoClient(mongo_uri)
-    db = client.get_database("db")
+    db = client.get_database("todos")
     # Test connection to the database
     db.command("ping")
     print("Database connection initialized successfully")
@@ -86,7 +86,7 @@ def update_todo(serial_no):
     return jsonify(element)
 
 @app.route('/search', methods=['GET', 'POST'])
-def search_todo(): 
+def search_todo():  
     
     search = request.form.get('search', '').lower()
     print(f"Search query: {search}")
@@ -96,15 +96,14 @@ def search_todo():
     return serialized_results
     
 @app.route('/')
-def landing_page():  
-
-    all_todo = list(db.todos.find({}))
+def landing_page():
+    all_todo = list(db.todos.find({},{'_id': 0, 'task_name': 1, 'desc': 1, 'date_created': 1}))
     print(all_todo)
     return jsonify(all_todo)
 
 @app.route('/about')
 def about_page():
-    return redirect('/')
+    return render_template('about.html')
 
 if __name__ == '__main__':
     app.run(debug=True, port=8000)

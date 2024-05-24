@@ -5,18 +5,26 @@ from bson import json_util
 import os
 from dotenv import load_dotenv
 from flask_cors import CORS
+import json
+from bson import ObjectId
 
 # Load environment variables from .env file
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})
 
 # Load MongoDB URI from environment variables
 mongo_uri = os.getenv("MONGO_URI")
 
-# Debugging statement to check if the environment variable is loaded
+# Custom JSON encoder to handle ObjectId serialization
+class CustomJSONEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, ObjectId):
+            return str(o)
+        return super().default(o)
 
+app.json_encoder = CustomJSONEncoder
 
 if not mongo_uri:
     raise ValueError("No MONGO_URI environment variable set. Please set it in your .env file.")
@@ -34,46 +42,46 @@ except Exception as e:
 
 @app.route("/submit", methods=['GET', 'POST'])
 def create_data():
-    
-
-    latest_todo = db.todos.find_one(sort=[("serial_no", -1)])
-
-    if latest_todo:
-        latest_serial_no = latest_todo.get("serial_no", 0)
-        serial_no = latest_serial_no + 1
-    else:
-        serial_no = 1
-    
     if request.method == 'POST':
-        title = request.form['title']
-        desc = request.form['desc']
+        latest_todo = db.todos.find_one(sort=[("serial_no", -1)])
+        if latest_todo:
+            latest_serial_no = latest_todo.get("serial_no", 0)
+            serial_no = latest_serial_no + 1
+        else:
+            serial_no = 1
+
+        title = request.json.get('task_name')
+        desc = request.json.get('desc')
+        end_time = request.json.get('end_time')
+        email = request.json.get('email')
         current_date = datetime.today()
+
         db.todos.insert_one({
+            'serial_no': serial_no,
             'title': title,
             'desc': desc,
             'date_created': current_date,
-            'serial_no': serial_no
+            'end_time': end_time,
+            'email': email,
         })
-        return redirect('/')
-      
-    # return render_template('submit.html')
+        return None
+
+    return None
 
 @app.route('/delete/<int:serial_no>')
-def delete_todo(serial_no):  
-
+def delete_todo(serial_no):
     db.todos.delete_one({"serial_no": serial_no})
     print('Deleting the data')
     return redirect('/')
 
 @app.route('/update/<int:serial_no>', methods=['GET', 'POST'])
-def update_todo(serial_no):  
-
+def update_todo(serial_no):
     element = db.todos.find_one({"serial_no": serial_no})
     if request.method == 'POST':
         updated_title = request.form['title']
         updated_desc = request.form['desc']
         updated_date = datetime.today()
-        
+
         db.todos.update_one({"serial_no": serial_no}, {
             "$set": {
                 "title": updated_title,
@@ -82,24 +90,23 @@ def update_todo(serial_no):
             }
         })
         return redirect('/')
-    
-    return jsonify(element)
+
+    return jsonify(json.loads(json_util.dumps(element)))
 
 @app.route('/search', methods=['GET', 'POST'])
-def search_todo():  
-    
+def search_todo():
     search = request.form.get('search', '').lower()
     print(f"Search query: {search}")
     results = list(db.todos.find({"title": {"$regex": f"^{search}", "$options": "i"}}))
     print(f"Number of results: {len(results)}")
-    serialized_results = json_util.dumps(results)
-    return serialized_results
-    
+    serialized_results = json.loads(json_util.dumps(results))
+    return jsonify(serialized_results)
+
 @app.route('/')
 def landing_page():
-    all_todo = list(db.todos.find({},{'_id': 0, 'task_name': 1, 'desc': 1, 'date_created': 1}))
+    all_todo = list(db.todos.find({}))
     print(all_todo)
-    return jsonify(all_todo)
+    return jsonify(json.loads(json_util.dumps(all_todo)))
 
 @app.route('/about')
 def about_page():

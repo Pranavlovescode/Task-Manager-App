@@ -42,7 +42,7 @@ const Home: React.FC = () => {
             />
           </div>
           <Link
-            to="/addtask"            
+            to="/addtask"
             className="flex items-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 justify-center"
           >
             <svg
@@ -88,16 +88,16 @@ const Home: React.FC = () => {
           <tbody>
             {task.map((tasks, id) => (
               <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                <td className="px-6 py-4">{id + 1}</td>
+                <td className="px-6 py-4" key={id}>{id + 1}</td>
                 <th
                   scope="row"
                   className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                 >
-                  {tasks.task_name}
+                  {tasks.title}
                 </th>
                 <td className="px-6 py-4">{tasks.desc}</td>
-                <td className="px-6 py-4">{tasks.date_created}</td>
-                <td className="px-6 py-4">{tasks.end_date}</td>
+                <td className="px-6 py-4">{tasks.date_created.$date}</td>
+                <td className="px-6 py-4">{tasks.end_time}</td>
                 <td className="px-6 py-4">
                   <div className="flex flex-row">
                     <a

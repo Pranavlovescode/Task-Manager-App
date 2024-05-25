@@ -4,6 +4,7 @@ type Task = {
   task_name: string;
   email: string;
   end_time: string;
+  end_date: string;
   desc: string;
 };
 const AddTask: React.FC = () => {
@@ -13,6 +14,7 @@ const AddTask: React.FC = () => {
     task_name: "",
     email: "",
     end_time: "",
+    end_date: "",
     desc: "",
   });
   const handelFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -60,7 +62,7 @@ const AddTask: React.FC = () => {
                 required
               />
             </div>
-            <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 mb-4">
+            <div className="grid gap-4 sm:grid-cols-3 sm:gap-6 mb-4">
               <div className="w-full">
                 <label
                   htmlFor="email"
@@ -79,6 +81,27 @@ const AddTask: React.FC = () => {
                   placeholder="Your Email"
                   required
                 />
+              </div>
+              <div className="w-full">
+                <label
+                  htmlFor="End-date"
+                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
+                  End Date
+                </label>
+                <div className="flex flex-row">
+                  <input
+                    type="date"
+                    name="end_date"
+                    id="end_date"
+                    onChange={(e) => {
+                      setTask_data({ ...task_data, end_date: e.target.value });
+                    }}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 mr-4"
+                    placeholder="YYYY-MM-DD"
+                    required
+                  />
+                </div>
               </div>
               <div className="w-full">
                 <label

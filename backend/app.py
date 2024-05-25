@@ -53,15 +53,16 @@ def create_data():
         title = request.json.get('task_name')
         desc = request.json.get('desc')
         end_time = request.json.get('end_time')
+        end_date = request.json.get('end_date')
         email = request.json.get('email')
         current_date = datetime.today()
-
+        updated_end_time = datetime.strptime(f"{end_date} {end_time}", '%Y-%m-%d %H:%M')
         db.todos.insert_one({
             'serial_no': serial_no,
             'title': title,
             'desc': desc,
             'date_created': current_date,
-            'end_time': end_time,
+            'end_time': updated_end_time,
             'email': email,
         })
         return {'message': 'Data added successfully'}

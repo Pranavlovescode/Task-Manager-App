@@ -1,8 +1,8 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { DataContext } from "../context/dataContext";
+
 const Home: React.FC = () => {
-  const data = useContext(DataContext);
+  
   const [task, setTask] = useState<any[]>([]);
   
   const deleteTask = async (id: number) => {
@@ -19,12 +19,17 @@ const Home: React.FC = () => {
     await res.json();
   };
   
-  
+  const allTodo = async () => {
+    const response = await fetch("http://127.0.0.1:8000/");
+    const res = await response.json();
+    // console.log(res);
+    setTask(res);
+  };
+
   useEffect(() => {
-    setTask(data);
-    console.log(task);
-    
-  }, [data]);
+    allTodo();
+    console.log(task);    
+  }, []);
   return (
     <>
       <div className="relative overflow-x-auto mx-auto max-w-screen-xl shadow-md sm:rounded-lg mt-10 pt-5">

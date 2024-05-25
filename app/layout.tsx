@@ -5,6 +5,7 @@ import { ThemeModeScript, Navbar, Button } from "flowbite-react";
 import "./globals.css";
 import Navbar_website from "./components/page";
 
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -23,8 +24,10 @@ export default function RootLayout({
         <ThemeModeScript />
       </head>
       <body className={inter.className}>
+        
         <Navbar_website/>
         {children}
+        
       </body>
     </html>
   );

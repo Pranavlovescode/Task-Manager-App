@@ -1,12 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
 import { HiInformationCircle } from "react-icons/hi";
-import { Alert } from "flowbite-react";
+import { Alert ,Button} from "flowbite-react";
 type TaskType = {
   title: string;
   desc: string;
   date_created: string;
   end_time: string;
+  serial_no: number;
 };
 export default function Home() {
   const [task, setTask] = useState<TaskType[] | null>([]);  
@@ -30,13 +31,21 @@ export default function Home() {
     setTask(res);
     console.log(res);
   }
+  const deleteTask = async (serial_no:number) => {
+    const response = await fetch(`http://localhost:8000/delete/${serial_no}`,{
+      method:'DELETE',
+    })
+    const res = await response.json();
+    console.log(res);
+    getTask();
+  }
   useEffect(() => {
     getTask();
   }, []);
   return (
     <main className="px-16 pt-10 dark:bg-gray-600 bg-white h-screen">
       <div className="mx-4 relative pt-2 overflow-x-auto shadow-md sm:rounded-lg">
-        <div className="bg-white pb-4 pt-4 dark:bg-gray-950">
+        <div className="bg-white pb-4 pt-4 dark:bg-gray-950 flex flex-row justify-between">
           <label htmlFor="table-search" className="sr-only">
             Search
           </label>
@@ -67,6 +76,7 @@ export default function Home() {
               placeholder="Search for tasks"
             />
           </form>
+          <Button className="mr-4" color={"blue"} href="/addTask">Add Task</Button>
         </div>
         <table className="w-full text-left text-sm text-gray-500 dark:text-gray-400 rtl:text-right">
           <thead className="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
@@ -96,7 +106,7 @@ export default function Home() {
               task.map((data, index) => (
                 <tr className="border-b bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-900">
                   <td className="w-4 p-4">
-                    <div className="flex items-center">{index + 1}</div>
+                    <div className="flex items-center text-center">{index + 1}</div>
                   </td>
                   <th
                     scope="row"
@@ -109,17 +119,17 @@ export default function Home() {
                   <td className="px-6 py-4">{data.end_time}</td>
                   <td className="px-6 py-4">
                     <a
-                      href="#"
+                      href="/editTask"
                       className="font-medium text-blue-600 hover:underline dark:text-blue-500"
                     >
                       Edit
                     </a>
-                    <a
-                      href="#"
+                    <button
+                      onClick={()=>{deleteTask(data.serial_no)}}
                       className="ml-2 font-medium text-red-600 hover:underline dark:text-red-500"
                     >
                       Remove
-                    </a>
+                    </button>
                   </td>
                 </tr>
               ))

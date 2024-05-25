@@ -8,6 +8,7 @@ type Task = {
   end_time: string;
   desc: string;
   serial_no: number;
+  end_date: string;
 };
 
 const UpdateTask: React.FC = () => {
@@ -22,6 +23,7 @@ const UpdateTask: React.FC = () => {
     end_time: "",
     desc: "",
     serial_no: 0,
+    end_date: "",
   });
 
   useEffect(() => {
@@ -29,11 +31,19 @@ const UpdateTask: React.FC = () => {
       setInitalData(data);
       const task = data.find((task: Task) => task.serial_no === num);
       if (task) {
-        setTask_data(task);
+        setTask_data({
+          title: task.title,
+          email: task.email,
+          end_time: new Date(task.end_time).toISOString().split('T')[1].split('.')[0],
+          desc: task.desc,
+          serial_no: task.serial_no,
+          end_date:new Date(task.end_time).toISOString().split('T')[0].split('.')[0]
+        });
       }
+      console.log(task_data.end_date,task_data.end_time)
     }
   }, [data, num]);
-
+  
   const handelFormUpdate = async (
     e: React.FormEvent<HTMLFormElement>,
     id: number
@@ -83,7 +93,7 @@ const UpdateTask: React.FC = () => {
                 placeholder="Type Task name"
               />
             </div>
-            <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 mb-4">
+            <div className="grid gap-4 sm:grid-cols-3 sm:gap-6 mb-4">
               <div className="w-full">
                 <label
                   htmlFor="email"
@@ -101,6 +111,24 @@ const UpdateTask: React.FC = () => {
                   }}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="Your Email"
+                />
+              </div>
+              <div className="w-full">
+                <label
+                  htmlFor="end_time"
+                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
+                  End Time
+                </label>
+                <input
+                  type="date"
+                  name="end_date"
+                  id="end_date"
+                  value={task_data.end_date}
+                  onChange={(e) => {
+                    setTask_data({ ...task_data, end_date: e.target.value });
+                  }}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 mr-4"
                 />
               </div>
               <div className="w-full">

@@ -7,12 +7,29 @@ from dotenv import load_dotenv
 from flask_cors import CORS
 import json
 from bson import ObjectId
+from flask_mail import Mail, Message
+from apscheduler.schedulers.background import BackgroundScheduler
+from datetime import datetime, timedelta
 
 # Load environment variables from .env file
 load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
+
+# Mail configuration
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = os.getenv('EMAIL_USER')
+app.config['MAIL_PASSWORD'] = os.getenv('EMAIL_PASS')
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv('EMAIL_USER')
+
+
+# Scheduler configuration
+mail = Mail(app)
+scheduler = BackgroundScheduler()
+scheduler.start()
 
 # Load MongoDB URI from environment variables
 mongo_uri = os.getenv("MONGO_URI")
@@ -25,6 +42,18 @@ class CustomJSONEncoder(json.JSONEncoder):
         return super().default(o)
 
 app.json_encoder = CustomJSONEncoder
+
+tasks = []
+
+def send_email(recipient, task_name, desc):
+    with app.app_context():
+        msg = Message(f'Reminder: {task_name} is due soon!',recipients=[recipient])
+        msg.body = f'Task "{task_name}" is due in 1 hour.\n\nDescription:\n{desc}.\nAfter completion, please delete the task from the app.\n If not completed, the task will be deleted automatically.\n\nThank you!'
+        mail.send(msg)
+
+def delete_task(serial_no):
+    db.todos.delete_one({"serial_no": serial_no})
+    print('Deleting the data')
 
 if not mongo_uri:
     raise ValueError("No MONGO_URI environment variable set. Please set it in your .env file.")
@@ -65,9 +94,24 @@ def create_data():
             'end_time': updated_end_time,
             'email': email,
         })
-        return {'message': 'Data added successfully'}
+        task = {
+            'title': title,
+            'email': email,
+            'end_time': updated_end_time,
+            'desc': desc,
+            'serial_no': serial_no
+        }
+        tasks.append(task)
 
-    return {'message': 'Data added successfully'}
+        # Schedule the email to be sent 1 hour before the end time
+        scheduler.add_job(send_email, 'date', run_date=updated_end_time - timedelta(hours=1), args=[task['email'], task['title'], task['desc']])
+
+        # Schedule task deletion at the end time
+        scheduler.add_job(delete_task, 'date', run_date=updated_end_time, args=[task['serial_no']])
+
+        return {'message': 'Task added and email scheduled successfully'}
+
+    return {'message': 'Task added and email scheduled successfully'}
 
 @app.route('/delete/<int:serial_no>',methods=['DELETE'])
 def delete_todo(serial_no):
@@ -82,19 +126,38 @@ def update_todo(serial_no):
         updated_title = request.json.get('title')
         updated_desc = request.json.get('desc')
         updated_end_time = request.json.get('end_time')
+        updated_end_date = request.json.get('end_date')
+        updated_email = request.json.get('email')
         updated_date = datetime.today()
-
+        updated_total_time = datetime.strptime(f"{updated_end_date} {updated_end_time}", '%Y-%m-%d %H:%M')
+        print(f"Updated total time: {updated_total_time}")
         db.todos.update_one({"serial_no": serial_no}, {
             "$set": {
                 "title": updated_title,
                 "desc": updated_desc,
                 "date_created": updated_date,
-                "end_time": updated_end_time
+                "end_time": updated_total_time,
+                "email": updated_email
             }
         })
-        return {'message': 'Data updated successfully'}
+        task = {
+            'title': updated_title,
+            'email': updated_email,
+            'end_time': updated_total_time,
+            'desc': updated_desc,
+            'serial_no': serial_no,            
+        }
+        tasks.append(task)
 
-    return {'message': 'Data updated successfully'}
+        # Schedule the email to be sent 1 hour before the end time
+        scheduler.add_job(send_email, 'date', run_date=updated_total_time - timedelta(hours=1), args=[task['email'], task['title'], task['desc']])
+
+        # Schedule task deletion at the end time
+        scheduler.add_job(delete_task, 'date', run_date=updated_total_time, args=[task['serial_no']])
+
+        return {'message': 'Data updated successfully and email scheduled successfully'}
+
+    return {'message': 'Data updated successfully and email scheduled successfully'}
 
 @app.route('/search', methods=['GET', 'POST'])
 def search_todo():

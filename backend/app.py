@@ -78,7 +78,7 @@ def delete_todo(serial_no):
 def update_todo(serial_no):
     element = db.todos.find_one({"serial_no": serial_no})
     if request.method == 'POST':
-        updated_title = request.json.get('task_name')
+        updated_title = request.json.get('title')
         updated_desc = request.json.get('desc')
         updated_end_time = request.json.get('end_time')
         updated_date = datetime.today()
@@ -91,9 +91,9 @@ def update_todo(serial_no):
                 "end_time": updated_end_time
             }
         })
-        return redirect('/')
+        return {'message': 'Data updated successfully'}
 
-    return jsonify(element)
+    return {'message': 'Data updated successfully'}
 
 @app.route('/search', methods=['GET', 'POST'])
 def search_todo():

@@ -1,35 +1,43 @@
-
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { DataContext } from "../context/dataContext";
 
 type Task = {
-  task_name: string;
+  title: string;
   email: string;
   end_time: string;
   desc: string;
   serial_no: number;
 };
-const updateTask: React.FC = () => {
+
+const UpdateTask: React.FC = () => {
+  const data = useContext(DataContext);
   const navigate = useNavigate();
-  const location = useLocation()
-  const num = location.pathname.split('/')[2]
+  const location = useLocation();
+  const num = Number(location.pathname.split("/")[2]);
   const [initalData, setInitalData] = useState<any[]>([]);
   const [task_data, setTask_data] = useState<Task>({
-    task_name: "",
+    title: "",
     email: "",
     end_time: "",
     desc: "",
     serial_no: 0,
   });
-  const allTodo = async () => {
-    const response = await fetch("http://localhost:8000/");
-    const res = await response.json();
-    console.log(Number(num));    
-    setInitalData(res);
-    
-  };
-  
-  const handelFormUpdate = async (e: React.FormEvent<HTMLFormElement>,id:number) => {
+
+  useEffect(() => {
+    if (data.length > 0) {
+      setInitalData(data);
+      const task = data.find((task: Task) => task.serial_no === num);
+      if (task) {
+        setTask_data(task);
+      }
+    }
+  }, [data, num]);
+
+  const handelFormUpdate = async (
+    e: React.FormEvent<HTMLFormElement>,
+    id: number
+  ) => {
     e.preventDefault();
     const response = await fetch(`http://localhost:8000/update/${id}`, {
       method: "POST",
@@ -43,11 +51,6 @@ const updateTask: React.FC = () => {
     console.log(res);
     navigate("/");
   };
-  useEffect(()=>{
-    allTodo()
-    console.log(initalData[Number(num)]);
-},[])
-
 
   return (
     <>
@@ -56,26 +59,28 @@ const updateTask: React.FC = () => {
           <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">
             Update current Task
           </h2>
-          <form onSubmit={(e)=>{handelFormUpdate(e,Number(num))}}>
+          <form
+            onSubmit={(e) => {
+              handelFormUpdate(e, num);
+            }}
+          >
             <div className="sm:col-span-2">
               <label
-                htmlFor="name"
+                htmlFor="title"
                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
               >
                 Task Name
               </label>
               <input
                 type="text"
-                name="task_name"
-                id="task_name"
-                value={initalData[Number(num)].task_name}
+                name="title"
+                id="title"
+                value={task_data.title}
                 onChange={(e) => {
-                  setTask_data({ ...task_data, task_name: e.target.value });
+                  setTask_data({ ...task_data, title: e.target.value });
                 }}
-                
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mb-4"
                 placeholder="Type Task name"
-                
               />
             </div>
             <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 mb-4">
@@ -89,42 +94,37 @@ const updateTask: React.FC = () => {
                 <input
                   type="text"
                   name="email"
-                  value={initalData[Number(num)].email}
                   id="email"
+                  value={task_data.email}
                   onChange={(e) => {
                     setTask_data({ ...task_data, email: e.target.value });
                   }}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="Your Email"
-                  
                 />
               </div>
               <div className="w-full">
                 <label
-                  htmlFor="End-time"
+                  htmlFor="end_time"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >
                   End Time
                 </label>
-                <div className="flex flex-row">
-                  <input
-                    type="time"
-                    name="end_time"
-                    value={initalData[Number(num)].end_time}
-                    id="end_time"
-                    onChange={(e) => {
-                      setTask_data({ ...task_data, end_time: e.target.value });
-                    }}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 mr-4"
-                    placeholder="YYYY-MM-DD"
-                    
-                  />
-                </div>
+                <input
+                  type="time"
+                  name="end_time"
+                  id="end_time"
+                  value={task_data.end_time}
+                  onChange={(e) => {
+                    setTask_data({ ...task_data, end_time: e.target.value });
+                  }}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 mr-4"
+                />
               </div>
             </div>
             <div className="sm:col-span-2">
               <label
-                htmlFor="description"
+                htmlFor="desc"
                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
               >
                 Description
@@ -132,7 +132,7 @@ const updateTask: React.FC = () => {
               <textarea
                 id="desc"
                 name="desc"
-                value={initalData[Number(num)].desc}
+                value={task_data.desc}
                 onChange={(e) => {
                   setTask_data({ ...task_data, desc: e.target.value });
                 }}
@@ -154,4 +154,4 @@ const updateTask: React.FC = () => {
   );
 };
 
-export default updateTask;
+export default UpdateTask;

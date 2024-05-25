@@ -16,7 +16,7 @@ const UpdateTask: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const num = Number(location.pathname.split("/")[2]);
-  const [initalData, setInitalData] = useState<any[]>([]);
+  // const [initalData, setInitalData] = useState<any[]>([]);
   const [task_data, setTask_data] = useState<Task>({
     title: "",
     email: "",
@@ -28,7 +28,7 @@ const UpdateTask: React.FC = () => {
 
   useEffect(() => {
     if (data.length > 0) {
-      setInitalData(data);
+      // setInitalData(data);
       const task = data.find((task: Task) => task.serial_no === num);
       if (task) {
         setTask_data({

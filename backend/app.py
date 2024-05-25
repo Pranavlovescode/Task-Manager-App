@@ -99,10 +99,10 @@ def update_todo(serial_no):
 def search_todo():
     search = request.form.get('search', '').lower()
     print(f"Search query: {search}")
-    results = list(db.todos.find({"title": {"$regex": f"^{search}", "$options": "i"}}))
+    results = list(db.todos.find({"title": {"$regex": f"{search}", "$options": "i"}},{ "_id": 0 }))
     print(f"Number of results: {len(results)}")
     serialized_results = json_util.dumps(results)
-    return jsonify(serialized_results)
+    return jsonify(results)
 
 @app.route('/')
 def landing_page():

@@ -176,7 +176,7 @@ def landing_page():
 
 @app.route('/about')
 def about_page():
-    return render_template('about.html')
+    return "This is about page"
 
 if __name__ == '__main__':
     app.run(debug=True, port=8000)

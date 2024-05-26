@@ -41,6 +41,8 @@ export default function Home() {
   }
   useEffect(() => {
     getTask();
+    console.log(task);
+    
   }, []);
   return (
     <main className="px-16 pt-10 dark:bg-gray-600 bg-white h-screen">
@@ -119,7 +121,7 @@ export default function Home() {
                   <td className="px-6 py-4">{data.end_time}</td>
                   <td className="px-6 py-4">
                     <a
-                      href="/editTask"
+                      href={`/editTask/${data.serial_no}`}
                       className="font-medium text-blue-600 hover:underline dark:text-blue-500"
                     >
                       Edit

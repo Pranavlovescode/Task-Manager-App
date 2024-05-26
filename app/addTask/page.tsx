@@ -22,7 +22,7 @@ const AddTask: React.FC = () => {
 
   const handelFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const response = await fetch("http://localhost:8000/submit", {
+    const response = await fetch("https://task-manager-app-jdo6.onrender.com/submit", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -50,6 +50,7 @@ def send_email(recipient, task_name, desc):
         msg = Message(f'Reminder: {task_name} is due soon!',recipients=[recipient])
         msg.body = f'Task "{task_name}" is due in 1 hour.\n\nDescription:\n{desc}.\nAfter completion, please delete the task from the app.\n If not completed, the task will be deleted automatically.\n\nThank you!'
         mail.send(msg)
+        print("Email sent")
 
 def delete_task(serial_no):
     db.todos.delete_one({"serial_no": serial_no})

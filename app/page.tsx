@@ -13,14 +13,14 @@ export default function Home() {
   const [task, setTask] = useState<TaskType[] | null>([]);  
   const [search, setSearch] = useState<string>("");
   const getTask = async () => {
-    const response = await fetch("http://localhost:8000/");
+    const response = await fetch("https://task-manager-app-jdo6.onrender.com/");
     const data = await response.json();
     setTask(data);
     console.log(data);
   };
   const getSearchedTask = async (e:React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();     
-    const response = await fetch('http://localhost:8000/search',{
+    const response = await fetch('https://task-manager-app-jdo6.onrender.com/search',{
       method:'POST',
       headers:{
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -32,7 +32,7 @@ export default function Home() {
     console.log(res);
   }
   const deleteTask = async (serial_no:number) => {
-    const response = await fetch(`http://localhost:8000/delete/${serial_no}`,{
+    const response = await fetch(`https://task-manager-app-jdo6.onrender.com/delete/${serial_no}`,{
       method:'DELETE',
     })
     const res = await response.json();

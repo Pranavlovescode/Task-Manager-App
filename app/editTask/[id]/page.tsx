@@ -19,7 +19,7 @@ const UpdateTask: React.FC = () => {
   const num = Number(id);
 
   const getTask = async () => {
-    const response = await fetch("http://localhost:8000/");
+    const response = await fetch("https://task-manager-app-jdo6.onrender.com/");
     const data: Task[] = await response.json();
     setTasks(data);
   };
@@ -62,7 +62,7 @@ const UpdateTask: React.FC = () => {
     id: number,
   ) => {
     e.preventDefault();
-    const response = await fetch(`http://localhost:8000/update/${id}`, {
+    const response = await fetch(`https://task-manager-app-jdo6.onrender.com/update/${id}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -1,0 +1,6 @@
+Flask
+Flask-Mail
+APScheduler
+pymongo
+flask_cors
+

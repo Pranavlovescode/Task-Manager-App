@@ -8,7 +8,7 @@ const Navbar_website: React.FC = () => {
       <Navbar fluid={true} rounded={true} className="bg-gray-100 rounded-none">
         <Navbar.Brand href="/">
           <img
-            src="https://flowbite.com/docs/images/logo.svg"
+            src="/logo.svg"
             className="mr-3 h-6 sm:h-9"
             alt="Flowbite Logo"
           />
